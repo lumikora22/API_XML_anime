@@ -1,34 +1,36 @@
 const buttomFetch = document.createElement("button");
 const template = document.querySelector(".template").content;
-const contenedor = document.querySelector(".card-columns");
+const contenedor = document.querySelector(".card-container");
 const fragment = document.createDocumentFragment();
 const botonvm = document.querySelector(".btn-more");
+const form = document.querySelector("#formSearch");
+let search = document.getElementById("btnSearch");
 
 let index = 1;
-let showAnimes = 4;
+let showAnimes = 20;
+//Contenedor de animes
+let isSearch = true;
 document.addEventListener("DOMContentLoaded", (e) => {
   fetchData();
 });
 
-document.addEventListener("click", () => {
-  showAnimes++;
+botonvm.addEventListener("click", (e) => {
+  e.preventDefault();
+  showAnimes = 1;
   fetchData();
+  console.log("se activo");
+  console.log(showAnimes);
+  // showAnimes++;
+  // fetchData();
+});
+search.addEventListener("click", () => {
+  showAnimes = 0;
+  fetchData();
+  console.log("se activo");
 });
 
-const fetchDataComplete = async function () {
-  for (let i = 1; i < 5; i++) {
-    const api = "https://cdn.animenewsnetwork.com/encyclopedia/api.xml?";
-    const anime = `anime=${i}`;
-    const res = await fetch(api + anime);
-    const data = await res.text();
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(data, "application/xml");
-    // console.log(xml);
-  }
-};
-fetchDataComplete();
-
 const fetchData = async () => {
+  console.log(showAnimes);
   // return fetch(apis.currentWeather.url(lat, lon))
   // .then(response => response.text())
   // .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
@@ -50,10 +52,9 @@ const fetchData = async () => {
       const parser = new DOMParser();
       const xml = parser.parseFromString(data, "application/xml");
       //   (str) => new (window.DOMParser().parseFromString)(str, "text/xml");
+      console.log(xml.all[1].attributes.name.value.toLowerCase());
       arrAnime.push(xml.all);
-      //   console.log(xml.all[1]);
     }
-    // console.log(arrAnime);
     asignarValor(arrAnime);
   } catch (e) {
     console.log(e);
@@ -80,12 +81,10 @@ const asignarValor = (data) => {
       description = el[1].querySelectorAll('info[type="Plot Summary"]')[0]
         .textContent;
     }
-
     dataTarget.push(id, img, tittle, arrGenres, description);
 
     pintarTarget(dataTarget);
   });
-  //   console.log(data.all[0].childNodes[0].attributes);
 };
 
 function pintarTarget(dt) {
@@ -147,3 +146,16 @@ const pintarCat = (data) => {
   fragment.appendChild(clone);
   contenedor.appendChild(fragment);
 };
+
+// const fetchDataComplete = async function () {
+//   for (let i = 1; i < 5; i++) {
+//     const api = "https://cdn.animenewsnetwork.com/encyclopedia/api.xml?";
+//     const anime = `anime=${i}`;
+//     const res = await fetch(api + anime);
+//     const data = await res.text();
+//     const parser = new DOMParser();
+//     const xml = parser.parseFromString(data, "application/xml");
+//     // console.log(xml);
+//   }
+// };
+// fetchDataComplete();
