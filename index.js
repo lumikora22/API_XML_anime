@@ -1,8 +1,17 @@
 const buttomFetch = document.createElement("button");
 const template = document.querySelector(".template").content;
-const contenedor = document.querySelector(".container");
+const contenedor = document.querySelector(".card-columns");
 const fragment = document.createDocumentFragment();
+const botonvm = document.querySelector(".btn-more");
+
+let index = 1;
+let showAnimes = 4;
 document.addEventListener("DOMContentLoaded", (e) => {
+  fetchData();
+});
+
+document.addEventListener("click", () => {
+  showAnimes++;
   fetchData();
 });
 
@@ -30,7 +39,7 @@ const fetchData = async () => {
   try {
     const arr = [6, 10, 11, 21, 25, 28, 30, 31, 32, 33, 39, 40, 68, 71, 76, 78];
     let arrAnime = [];
-    for (let index = 1; index <= 100; index++) {
+    for (index; index <= showAnimes; index++) {
       if (arr.indexOf(index) > -1) {
         continue;
       }
@@ -61,8 +70,8 @@ const asignarValor = (data) => {
     const tittle = el[1].attributes.name.value;
     arrGenres = [];
     const genres = el[1].querySelectorAll("info[type=Genres]");
-    for (let index = 0; index < genres.length; index++) {
-      arrGenres.push(genres[index].textContent);
+    for (let i = 0; i < genres.length; i++) {
+      arrGenres.push(genres[i].textContent);
     }
     let description = "";
     if (el[1].querySelectorAll('info[type="Plot Summary"]')[0] === undefined) {
