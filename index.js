@@ -5,32 +5,60 @@ const fragment = document.createDocumentFragment();
 const botonvm = document.querySelector(".btn-more");
 const form = document.querySelector("#formSearch");
 let search = document.getElementById("btnSearch");
+let searchText = document.getElementById("searching");
 
 let index = 1;
-let showAnimes = 20;
+let showAnimes = 50;
+let newValue;
 //Contenedor de animes
 let isSearch = true;
+//Bandera encontrado
+let isFound = false;
 document.addEventListener("DOMContentLoaded", (e) => {
   fetchData();
 });
 
 botonvm.addEventListener("click", (e) => {
   e.preventDefault();
-  showAnimes = 1;
+
+  showAnimes++;
+  console.log("push");
   fetchData();
-  console.log("se activo");
-  console.log(showAnimes);
-  // showAnimes++;
-  // fetchData();
 });
-search.addEventListener("click", () => {
-  showAnimes = 0;
-  fetchData();
-  console.log("se activo");
+search.addEventListener("click", (e) => {
+  cleanDOM(e);
+  e.preventDefault();
+  founds = [];
+  let valuetext = searchText.value.toLowerCase();
+
+  for (let el = 0; el < newValue[0].length; el++) {
+    let valuetitle = newValue[0][el][1].attributes.name.value.toLowerCase();
+
+    if (valuetitle.indexOf(valuetext) !== -1) {
+      console.log("Found it ");
+      founds.push(el);
+      // console.log(el[0]);
+      asignarValor(newValue[0][el]);
+    } else {
+      console.log("Not Found");
+    }
+  }
+  console.log(founds);
+  founds.length !== 0 ? (isFound = true) : (isFound = false);
+  isFound ? alert("Found it :D") : alert("Not Found :c");
+  // setTimeout(clickbutton, 1);
+  founds = [];
+  // console.log(newValue[0][1]);
 });
 
+function cleanDOM(e) {
+  contenedor.innerHTML = ``;
+}
+function saveValue(value) {
+  newValue = [value];
+}
+
 const fetchData = async () => {
-  console.log(showAnimes);
   // return fetch(apis.currentWeather.url(lat, lon))
   // .then(response => response.text())
   // .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
@@ -52,43 +80,78 @@ const fetchData = async () => {
       const parser = new DOMParser();
       const xml = parser.parseFromString(data, "application/xml");
       //   (str) => new (window.DOMParser().parseFromString)(str, "text/xml");
-      console.log(xml.all[1].attributes.name.value.toLowerCase());
+
       arrAnime.push(xml.all);
     }
     asignarValor(arrAnime);
+    saveValue(arrAnime);
   } catch (e) {
     console.log(e);
   }
 };
 const asignarValor = (data) => {
-  data.forEach((el) => {
-    // console.log(el[1]);
+  if (typeof data === "object") {
+    console.log("Es objeto");
+    data.forEach((el) => {
+      // console.log(el[1]);
+      let dataTarget = [];
+      //Asignamos valores de elementosw a agregar
+      const id = el[1].attributes.id.value;
+      const img =
+        el[1].querySelectorAll("info[type=Picture]")[0].attributes.src.value;
+      const tittle = el[1].attributes.name.value;
+      arrGenres = [];
+      const genres = el[1].querySelectorAll("info[type=Genres]");
+      for (let i = 0; i < genres.length; i++) {
+        arrGenres.push(genres[i].textContent);
+      }
+      let description = "";
+      if (
+        el[1].querySelectorAll('info[type="Plot Summary"]')[0] === undefined
+      ) {
+        description = "Nada que mostrar";
+      } else {
+        description = el[1].querySelectorAll('info[type="Plot Summary"]')[0]
+          .textContent;
+      }
+      dataTarget.push(id, img, tittle, arrGenres, description);
+      const frag = pintarTarget(dataTarget);
+
+      contenedor.appendChild(frag);
+    });
+  } else {
+    console.log("asignando a filtro");
+    // console.log(data[1].attributes.id.value);
     let dataTarget = [];
-    //Asignamos valores de elementosw a agregar
-    const id = el[1].attributes.id.value;
+    //Asignamos valores de elementos a agregar
+    const id = data[1].attributes.id.value;
     const img =
-      el[1].querySelectorAll("info[type=Picture]")[0].attributes.src.value;
-    const tittle = el[1].attributes.name.value;
+      data[1].querySelectorAll("info[type=Picture]")[0].attributes.src.value;
+    const tittle = data[1].attributes.name.value;
     arrGenres = [];
-    const genres = el[1].querySelectorAll("info[type=Genres]");
+    const genres = data[1].querySelectorAll("info[type=Genres]");
     for (let i = 0; i < genres.length; i++) {
       arrGenres.push(genres[i].textContent);
     }
     let description = "";
-    if (el[1].querySelectorAll('info[type="Plot Summary"]')[0] === undefined) {
+    if (
+      data[1].querySelectorAll('info[type="Plot Summary"]')[0] === undefined
+    ) {
       description = "Nada que mostrar";
     } else {
-      description = el[1].querySelectorAll('info[type="Plot Summary"]')[0]
+      description = data[1].querySelectorAll('info[type="Plot Summary"]')[0]
         .textContent;
     }
     dataTarget.push(id, img, tittle, arrGenres, description);
 
-    pintarTarget(dataTarget);
-  });
+    const frag = pintarTarget(dataTarget);
+
+    contenedor.appendChild(frag);
+    console.log("filtadro exitoso");
+  }
 };
 
 function pintarTarget(dt) {
-  const clone = template.cloneNode(true);
   //id
   template.querySelectorAll("p")[0].textContent = dt[0];
   //img
@@ -100,10 +163,10 @@ function pintarTarget(dt) {
   //description
   template.querySelectorAll("p")[2].textContent = dt[4];
 
+  const clone = template.cloneNode(true);
   fragment.appendChild(clone);
-  contenedor.appendChild(fragment);
-
   document.getElementById("spinner").style.display = "none";
+  return fragment;
 }
 
 const pintarCat = (data) => {
