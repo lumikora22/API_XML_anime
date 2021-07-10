@@ -9,13 +9,16 @@ let searchText = document.getElementById("searching");
 
 let index = 1;
 let showAnimes = 50;
-let newValue;
+let newValue = [];
 //Contenedor de animes
 let isSearch = true;
 //Bandera encontrado
 let isFound = false;
+//LLenado de animes
+let arrAnime = [];
 document.addEventListener("DOMContentLoaded", (e) => {
   fetchData();
+  console.log(arrAnime);
 });
 
 botonvm.addEventListener("click", (e) => {
@@ -68,7 +71,7 @@ const fetchData = async () => {
   // .then(data=>console.log(data))
   try {
     const arr = [6, 10, 11, 21, 25, 28, 30, 31, 32, 33, 39, 40, 68, 71, 76, 78];
-    let arrAnime = [];
+
     for (index; index <= showAnimes; index++) {
       if (arr.indexOf(index) > -1) {
         continue;
