@@ -10,6 +10,9 @@
   box-sizing: border-box;
   font-family: "Fjalla One", sans-serif;
 }
+#navbarSupportedContent > ul{
+display:none;
+}
 
 .section-cards {
   margin: 25px;
